@@ -1,6 +1,7 @@
 package org.codingtask.service;
 
-import java.util.HashMap;
+import jakarta.enterprise.context.ApplicationScoped;
+
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
  * Task: Refactor this code to be production ready and create appropriate unit tests.
  */
 
+@ApplicationScoped
 public class TextAnalyzer {
     public enum AnalysisMode {
         VOWELS {
@@ -48,12 +50,11 @@ public class TextAnalyzer {
         public abstract List<String> letters();
     }
 
+    public Map<String, Integer> analyze(AnalysisRequest analysisRequest) {
+        String alphabeticalInput = analysisRequest.getInput().toUpperCase().replaceAll("[^A-Z]", "");
+        String filteredInput = analysisRequest.getMode().filter(alphabeticalInput);
 
-    public void analyze(AnalysisMode mode, String input) {
-        String alphabeticalInput = input.toUpperCase().replaceAll("[^A-Z]", "");
-        String filteredInput = mode.filter(alphabeticalInput);
-
-        Map<String, Integer> letterOccurrences = mode.letters().stream().collect(Collectors.toMap(
+        Map<String, Integer> letterOccurrences = analysisRequest.getMode().letters().stream().collect(Collectors.toMap(
                 letter -> letter,
                 letter -> 0
         ));
@@ -70,6 +71,8 @@ public class TextAnalyzer {
                 .forEach(entry -> {
                     System.out.println("Letter '" + entry.getKey() + "' appears " + entry.getValue() + " times");
                 });
+
+        return letterOccurrences;
     }
 
     static void usage() {
@@ -84,7 +87,7 @@ public class TextAnalyzer {
 
         try {
             AnalysisMode mode = AnalysisMode.valueOf(args[0].toUpperCase());
-            new TextAnalyzer().analyze(mode, args[1]);
+            new TextAnalyzer().analyze(new AnalysisRequest(mode, args[1]));
         } catch (IllegalArgumentException e) {
             usage();
         }
