@@ -1,0 +1,14 @@
+<form [formGroup]="analysisForm">
+
+    <label for="modeSelect">Mode</label>
+    <select id="modeSelect" formControlName="mode" class="form-select">
+        @for (m of modes; track m) {
+          <option [value]="m">{{ m }}</option>
+        }
+    </select>
+  
+    <label for="inputText">Input text</label>
+    <textarea id="inputText"
+              formControlName="input">
+    </textarea>
+</form>

@@ -1,9 +1,13 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { AnalyzerInput } from './analyzer-input/analyzer-input';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [
+    AnalyzerInput,
+    ReactiveFormsModule,
+  ],
   templateUrl: './app.html',
   styleUrl: './app.less'
 })
