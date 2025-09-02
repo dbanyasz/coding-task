@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import {
   takeUntil,
 } from 'rxjs/operators';
-import { TextAnalyzerService } from '../service/text-analyzer-service';
+import { TextAnalysisService } from '../service/text-analysis-service';
 import { AnalysisMode, AnalysisRequest } from '../model/analysis-request';
 
 type AnalysisFormControls = {
@@ -13,12 +13,12 @@ type AnalysisFormControls = {
 };
 
 @Component({
-  selector: 'app-analyzer-input',
+  selector: 'app-analysis-input',
   imports: [ReactiveFormsModule],
-  templateUrl: './analyzer-input.html',
-  styleUrl: './analyzer-input.less'
+  templateUrl: './analysis-input.html',
+  styleUrl: './analysis-input.less'
 })
-export class AnalyzerInput {
+export class AnalysisInput {
 
   analysisForm!: FormGroup<AnalysisFormControls>;
 
@@ -27,7 +27,7 @@ export class AnalyzerInput {
 
   readonly modes = Object.values(AnalysisMode);
 
-  constructor(private fb: FormBuilder, private textAnalyzerService: TextAnalyzerService) {}
+  constructor(private fb: FormBuilder, private textAnalyzerService: TextAnalysisService) {}
 
   ngOnInit() {
     this.analysisForm = this.fb.group<AnalysisFormControls>({

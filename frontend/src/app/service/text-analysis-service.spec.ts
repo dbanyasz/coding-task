@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { TextAnalyzerService } from './text-analyzer-service';
+import { TextAnalysisService } from './text-analysis-service';
 
 describe('TextAnalyzerService', () => {
-  let service: TextAnalyzerService;
+  let service: TextAnalysisService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(TextAnalyzerService);
+    service = TestBed.inject(TextAnalysisService);
   });
 
   it('should be created', () => {

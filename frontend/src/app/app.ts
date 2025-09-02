@@ -1,11 +1,11 @@
 import { Component, signal } from '@angular/core';
-import { AnalyzerInput } from './analyzer-input/analyzer-input';
+import { AnalysisInput } from './analysis-input/analysis-input';
 import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
   imports: [
-    AnalyzerInput,
+    AnalysisInput,
     ReactiveFormsModule,
   ],
   templateUrl: './app.html',

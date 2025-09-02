@@ -9,7 +9,7 @@ export type LetterOccurrenceResponse = Record<string, number>;
 @Injectable({
   providedIn: 'root'
 })
-export class TextAnalyzerService {
+export class TextAnalysisService {
 
   private readonly apiUrl = `${environment.apiBase}/text-analysis`;
 
