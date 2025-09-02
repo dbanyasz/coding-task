@@ -28,23 +28,23 @@ export class TextAnalysisService {
       );
   }
 
-    /**
-     * Generic error handler for HttpClient calls.
-     * Returns an observable that errors out with a user‑friendly message.
-    */
-    private handleError(error: HttpErrorResponse) {
-      // Client‑side / network error
-      if (error.error instanceof ErrorEvent) {
-        console.error('Network error:', error.error.message);
-      } else {
-        // Server returned an unsuccessful status code
-        console.error(
-          `Backend returned code ${error.status}, body was:`,
-          error.error
-        );
-      }
-
-      const friendlyMessage = 'Something went wrong - please try again later.';
-      return throwError(() => new Error(friendlyMessage));
+  /**
+   * Generic error handler for HttpClient calls.
+   * Returns an observable that errors out with a user‑friendly message.
+  */
+  private handleError(error: HttpErrorResponse) {
+    // Client‑side / network error
+    if (error.error instanceof ErrorEvent) {
+      console.error('Network error:', error.error.message);
+    } else {
+      // Server returned an unsuccessful status code
+      console.error(
+        `Backend returned code ${error.status}, body was:`,
+        error.error
+      );
     }
+
+    const friendlyMessage = 'Something went wrong - please try again later.';
+    return throwError(() => new Error(friendlyMessage));
+  }
 }

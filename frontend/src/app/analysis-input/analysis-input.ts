@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
 import {
@@ -22,12 +22,12 @@ export class AnalysisInput {
 
   analysisForm!: FormGroup<AnalysisFormControls>;
 
-  inputSentence = new FormControl();
   private destroy$ = new Subject<void>();
 
   readonly modes = Object.values(AnalysisMode);
 
-  constructor(private fb: FormBuilder, private textAnalyzerService: TextAnalysisService) {}
+  private analysisService = inject(TextAnalysisService);
+  private fb = inject(FormBuilder);
 
   ngOnInit() {
     this.analysisForm = this.fb.group<AnalysisFormControls>({
@@ -40,21 +40,20 @@ export class AnalysisInput {
         nonNullable: true
       }),
     });
+  }
 
-    this.analysisForm.valueChanges
+  onSubmit(): void {
+    // Guard: do nothing if the form is invalid
+    if (this.analysisForm.invalid) {
+      // Touch all controls so validation messages appear
+      this.analysisForm.markAllAsTouched();
+      return;
+    }
+    const payload: AnalysisRequest = this.analysisForm.getRawValue();
+
+    this.analysisService
+      .analyze(payload)
       .pipe(
-        filter(() => this.analysisForm.valid),
-        debounceTime(300),
-        distinctUntilChanged(
-          (prev, curr) =>
-            JSON.stringify(prev) === JSON.stringify(curr)
-        ),
-        switchMap(() => {
-          const payload: AnalysisRequest = this.analysisForm.getRawValue();
-          console.log('🔄 Debounced payload →', payload);
-          return this.textAnalyzerService.analyze(payload);
-        }),
-
         takeUntil(this.destroy$)
       )
       .subscribe({

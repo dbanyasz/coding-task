@@ -1,4 +1,4 @@
-<form [formGroup]="analysisForm">
+<form [formGroup]="analysisForm" (ngSubmit)="onSubmit()">
 
     <label for="modeSelect">Mode</label>
     <select id="modeSelect" formControlName="mode" class="form-select">
@@ -11,4 +11,9 @@
     <textarea id="inputText"
               formControlName="input">
     </textarea>
+
+    <button type="submit"
+          [disabled]="analysisForm.invalid">
+          ANALYZE
+  </button>
 </form>
