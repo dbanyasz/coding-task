@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { catchError, Observable, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
 import { AnalysisRequest } from '../model/analysis-request';
 
-export type LetterOccurrenceResponse = Record<string, number>;
+export type LetterCountResponse = Record<string, number>;
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +13,10 @@ export class TextAnalysisService {
 
   private readonly apiUrl = `${environment.apiBase}/text-analysis`;
 
+  private readonly _response$ = new BehaviorSubject<LetterCountResponse | null>(null);
+  readonly response$ = this._response$.asObservable();
+  
+
   constructor(private http: HttpClient) {}
 
   /**
@@ -20,10 +24,13 @@ export class TextAnalysisService {
    * @param payload the request to forward to the API
    * @returns a map of letters and their number of occurrence
    */
-  analyze(payload: AnalysisRequest): Observable<LetterOccurrenceResponse> {
+  analyze(payload: AnalysisRequest): Observable<LetterCountResponse> {
     return this.http
-      .post<LetterOccurrenceResponse>(this.apiUrl, payload)
+      .post<LetterCountResponse>(this.apiUrl, payload)
       .pipe(
+        tap(resp => {
+          this._response$.next(resp);
+        }),
         catchError(this.handleError)
       );
   }
