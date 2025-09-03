@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AnalysisInput } from './analysis-input';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('AnalysisInput', () => {
   let component: AnalysisInput;
@@ -8,7 +10,11 @@ describe('AnalysisInput', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AnalysisInput]
+      imports: [AnalysisInput],
+      providers: [
+        provideHttpClient(),    
+        provideHttpClientTesting(),
+      ]
     })
     .compileComponents();
 

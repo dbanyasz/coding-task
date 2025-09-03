@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { BehaviorSubject, catchError, defer, Observable, of, tap, throwError } from 'rxjs';
@@ -16,8 +16,7 @@ export class TextAnalysisService {
   private readonly _response$ = new BehaviorSubject<LetterCountResponse | null>(null);
   readonly response$ = this._response$.asObservable();
   
-
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   /**
    * sends an AnalysisRequest containing a input sentence and an analysis mode to the text analysis backend
