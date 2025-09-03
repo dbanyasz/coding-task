@@ -2,8 +2,8 @@
 
     <label for="modeSelect">Mode</label>
     <select id="modeSelect" formControlName="mode" class="form-select">
-        @for (m of modes; track m) {
-          <option [value]="m">{{ m }}</option>
+        @for (m of modeOptions; track m) {
+          <option [value]="m.value">{{ m.value }}</option>
         }
     </select>
   
@@ -11,6 +11,8 @@
     <textarea id="inputText"
               formControlName="input">
     </textarea>
+
+    <app-online-toggle [(analyzeOnline)]="online"></app-online-toggle>
 
     <button type="submit"
           [disabled]="analysisForm.invalid">

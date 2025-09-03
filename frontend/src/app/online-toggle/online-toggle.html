@@ -1,0 +1,16 @@
+<div>
+    <label>
+      <input
+        type="checkbox"
+        [checked]="analyzeOnline"
+        (change)="toggleArchive($event)"
+      />
+      <span>
+        @if (analyzeOnline) {
+            ONLINE
+        } @else {
+            OFFLINE
+        }
+      </span>
+    </label>
+  </div>

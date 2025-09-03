@@ -5,54 +5,52 @@ import {
   takeUntil,
 } from 'rxjs/operators';
 import { TextAnalysisService } from '../service/text-analysis-service';
-import { AnalysisMode, AnalysisRequest } from '../model/analysis-request';
+import { AnalysisModeId, AnalysisRequest} from '../model/analysis-models';
+import { OnlineToggle } from "../online-toggle/online-toggle";
 
-type AnalysisFormControls = {
-  mode: FormControl<AnalysisMode>;
-  input: FormControl<string>;
-};
+const modeOptions = [
+  { label: 'Vowels', value: 'VOWELS' as AnalysisModeId },
+  { label: 'Consonants', value: 'CONSONANTS' as AnalysisModeId },
+];
 
 @Component({
   selector: 'app-analysis-input',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, OnlineToggle],
   templateUrl: './analysis-input.html',
   styleUrl: './analysis-input.less'
 })
 export class AnalysisInput {
 
-  analysisForm!: FormGroup<AnalysisFormControls>;
+  analysisForm!: FormGroup;
 
+  online = true;
   private destroy$ = new Subject<void>();
-
-  readonly modes = Object.values(AnalysisMode);
 
   private analysisService = inject(TextAnalysisService);
   private fb = inject(FormBuilder);
 
+  modeOptions = [
+    { label: 'Vowels', value: 'VOWELS' as AnalysisModeId },
+    { label: 'Consonants', value: 'CONSONANTS' as AnalysisModeId },
+  ];
+
   ngOnInit() {
-    this.analysisForm = this.fb.group<AnalysisFormControls>({
-      mode: new FormControl<AnalysisMode>(AnalysisMode.Consonants, {
-        validators: Validators.required,
-        nonNullable: true
-      }),
-      input: new FormControl<string>('', {
-        validators: [Validators.required, Validators.minLength(3)],
-        nonNullable: true
-      }),
+    this.analysisForm = this.fb.group({
+      input: ['', [Validators.minLength(1), Validators.required]],
+      mode: [this.modeOptions[0].value, Validators.required],
     });
   }
 
   onSubmit(): void {
-    // Guard: do nothing if the form is invalid
-    if (this.analysisForm.invalid) {
-      // Touch all controls so validation messages appear
-      this.analysisForm.markAllAsTouched();
-      return;
-    }
     const payload: AnalysisRequest = this.analysisForm.getRawValue();
 
-    this.analysisService
-      .analyze(payload)
+    console.log("is online: " + this.online);
+
+    const obs$ = this.online
+    ? this.analysisService.analyzeRemote(payload)
+    : this.analysisService.analyzeOffline(payload);
+
+    obs$
       .pipe(
         takeUntil(this.destroy$)
       )
@@ -62,6 +60,13 @@ export class AnalysisInput {
         },
         error: (err) => console.error('Request error:', err),
       });
+  }
+
+  private buildRequest(): AnalysisRequest {
+    return {
+      input: this.analysisForm.value.input,
+      mode: this.analysisForm.value.mode as AnalysisModeId,
+    };
   }
 
   ngOnDestroy() {
