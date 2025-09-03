@@ -28,3 +28,11 @@ There is no right or wrong approach here.
 The goal is to see how you handle things like testing, software design, integration of different technologies, vague requirements (like unspecified UI requirements or "good enough" concept), explanatory skills, ...
 
 ---
+
+## How to run:
+
+* `quarkus dev` in backend folder  
+* `ng dev` in frontend folder  
+* go to `localhost:4200` and ..'enjoy'..
+
+---
