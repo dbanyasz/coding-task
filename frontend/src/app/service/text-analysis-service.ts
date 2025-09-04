@@ -1,10 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { BehaviorSubject, catchError, defer, Observable, of, tap, throwError } from 'rxjs';
-import { ANALYSIS_MODE_MAP, AnalysisRequest, ModeBehaviour } from '../model/analysis-models';
-
-export type LetterCountResponse = Record<string, number>;
+import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
+import { ANALYSIS_MODE_MAP, AnalysisRequest, AnalysisResult, LetterCountResponse, ModeBehaviour } from '../model/analysis-models';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +11,7 @@ export class TextAnalysisService {
 
   private readonly apiUrl = `${environment.apiBase}/text-analysis`;
 
-  private readonly _response$ = new BehaviorSubject<LetterCountResponse | null>(null);
+  private readonly _response$ = new BehaviorSubject<AnalysisResult | null>(null);
   readonly response$ = this._response$.asObservable();
   
   private http = inject(HttpClient);
@@ -29,7 +27,8 @@ export class TextAnalysisService {
       .pipe(
         tap(resp => {
           console.log("received response", resp);
-          this._response$.next(resp);
+
+          this._response$.next(this.convertResponseToResult(payload, resp, true));
         }),
         catchError(this.handleError)
       )
@@ -59,7 +58,19 @@ export class TextAnalysisService {
     for (const key of sortedKeys) {
         console.log(`Letter '${key}' appears ${letterOccurrences[key]} times`);
     }
-    this._response$.next(letterOccurrences);
+    this._response$.next(this.convertResponseToResult(request, letterOccurrences, false));
+  }
+
+  private convertResponseToResult(request: AnalysisRequest, response: LetterCountResponse, online: boolean): AnalysisResult {
+    const analysisResult : AnalysisResult = {
+      timestamp: new Date(),
+      input: request.input,
+      mode: request.mode,
+      letterCount: response,
+      online
+    }
+
+    return analysisResult;
   }
 
   /**

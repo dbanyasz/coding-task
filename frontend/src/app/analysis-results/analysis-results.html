@@ -1,21 +1,49 @@
-@if (letterCount) {
-    <table>
-    <thead>
+@if (history.length > 0) {
+<section class="mt-8">
+  @for (r of history; track $index) {
+  <article class="result-card">
+    <!-- Header with timestamp and optional mode badge -->
+    <header class="result-header">
+      <strong>{{ r.timestamp | date:'short'}}</strong>
+      <div>
+        @if (r.mode) {
+        <span class="mode-badge">{{ r.mode }}</span>
+        }
+        <span class="mode-badge"> @if (r.online) { ONLINE } @else { OFFLINE } </span>
+      </div>
+    </header>
+
+    <!-- Letter‑frequency table -->
+    <table class="result-table">
+      <thead>
         <tr>
-        <th>Letter</th>
-        <th>Count</th>
+          <th class="text-left">Letter</th>
+          <th class="text-left">Count</th>
         </tr>
-    </thead>
-    <tbody>
-        @for (pair of letterCount | keyvalue; track pair.key) {
+      </thead>
+      <tbody>
+        @for (pair of r.letterCount | keyvalue; track pair.key) {
         <tr>
-            <td>{{ pair.key }}</td>
-            <td>{{ pair.value }}</td>
+          <td>{{ pair.key }}</td>
+          <td>{{ pair.value }}</td>
         </tr>
         }
-    </tbody>
+      </tbody>
     </table>
+
+    <!-- Optional original‑text collapsible block -->
+    @if (r.input) {
+    <details>
+      <summary class="cursor-pointer">Show original text</summary>
+      <pre class="source-text">
+  {{ r.input }}
+              </pre
+      >
+    </details>
+    }
+  </article>
+  }
+</section>
 } @else {
-    <h6>Last response received:</h6>
-    <p><em>No response yet.</em></p>
+<p>No analysis yet.</p>
 }

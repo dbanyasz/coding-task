@@ -8,7 +8,7 @@ export interface ModeBehaviour {
 
 export type AnalysisModeId = 'VOWELS' | 'CONSONANTS';
 
-/** papping from the identifier to the behavioural object used locally. */
+/** mapping from the identifier to the behavioural object used locally. */
 export const ANALYSIS_MODE_MAP: Record<AnalysisModeId, ModeBehaviour> = {
   VOWELS: {
     filter: (input) => input.replace(/[^AEIOU]/g, ''),
@@ -24,10 +24,17 @@ export const ANALYSIS_MODE_MAP: Record<AnalysisModeId, ModeBehaviour> = {
   },
 };
 
-/** Public shape of the request the UI builds. */
 export interface AnalysisRequest {
-  /** Raw text the user entered. */
   input: string;
-  /** Identifier that will be sent to the server. */
   mode: AnalysisModeId;
+}
+
+export type LetterCountResponse = Record<string, number>;
+
+export interface AnalysisResult {
+  timestamp: Date;
+  input: string;
+  letterCount: LetterCountResponse;
+  mode: AnalysisModeId;
+  online: boolean;
 }
