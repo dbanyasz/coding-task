@@ -19,43 +19,47 @@ export class TextAnalysisService {
   private http = inject(HttpClient);
 
   /**
-   * sends an AnalysisRequest containing a input sentence and an analysis mode to the text analysis backend
+   * sends an AnalysisRequest containing a input sentence and an analysis mode to the text analysis backend and notifies subscribers
    * @param payload the request to forward to the API
-   * @returns a map of letters and their number of occurrence
    */
-  analyzeRemote(payload: AnalysisRequest): Observable<LetterCountResponse> {
-    return this.http
+  analyzeRemote(payload: AnalysisRequest) {
+    console.log("launching request to: " + this.apiUrl)
+    this.http
       .post<LetterCountResponse>(this.apiUrl, payload)
       .pipe(
         tap(resp => {
+          console.log("received response", resp);
           this._response$.next(resp);
         }),
         catchError(this.handleError)
-      );
+      )
+      .subscribe();
   }
 
-  analyzeOffline(request: AnalysisRequest): Observable<LetterCountResponse> {
-    return defer(() => {
-      const alphabeticalInput = request.input.toUpperCase().replace(/[^A-Z]/g, '');
-      const modeBehaviour: ModeBehaviour = ANALYSIS_MODE_MAP[request.mode];
-      const filteredInput = modeBehaviour.filter(alphabeticalInput);
+  /**
+   * locally calculates the occurrences and notifies subscribers
+   * @param request containing input and analysis mode
+   * @returns 
+   */
+  analyzeOffline(request: AnalysisRequest) {
+    const alphabeticalInput = request.input.toUpperCase().replace(/[^A-Z]/g, '');
+    const modeBehaviour: ModeBehaviour = ANALYSIS_MODE_MAP[request.mode];
+    const filteredInput = modeBehaviour.filter(alphabeticalInput);
 
-      const letterOccurrences: LetterCountResponse = {} as LetterCountResponse;
-      for (const l of modeBehaviour.letters) {
-          letterOccurrences[l] = 0;
-      }
-      
-      for (const ch of filteredInput) {
-        letterOccurrences[ch] += 1;
-      }
+    const letterOccurrences: LetterCountResponse = {} as LetterCountResponse;
+    for (const l of modeBehaviour.letters) {
+        letterOccurrences[l] = 0;
+    }
+    
+    for (const ch of filteredInput) {
+      letterOccurrences[ch] += 1;
+    }
 
-      const sortedKeys = Object.keys(letterOccurrences).sort();
-      for (const key of sortedKeys) {
-          console.log(`Letter '${key}' appears ${letterOccurrences[key]} times`);
-      }
-      this._response$.next(letterOccurrences);
-      return of(letterOccurrences);
-    });
+    const sortedKeys = Object.keys(letterOccurrences).sort();
+    for (const key of sortedKeys) {
+        console.log(`Letter '${key}' appears ${letterOccurrences[key]} times`);
+    }
+    this._response$.next(letterOccurrences);
   }
 
   /**

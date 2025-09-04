@@ -1,9 +1,6 @@
 import { Component, inject } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Subject } from 'rxjs';
-import {
-  takeUntil,
-} from 'rxjs/operators';
 import { TextAnalysisService } from '../service/text-analysis-service';
 import { AnalysisModeId, AnalysisRequest} from '../model/analysis-models';
 import { OnlineToggle } from "../online-toggle/online-toggle";
@@ -45,28 +42,12 @@ export class AnalysisInput {
     const payload: AnalysisRequest = this.analysisForm.getRawValue();
 
     console.log("is online: " + this.online);
-
-    const obs$ = this.online
-    ? this.analysisService.analyzeRemote(payload)
-    : this.analysisService.analyzeOffline(payload);
-
-    obs$
-      .pipe(
-        takeUntil(this.destroy$)
-      )
-      .subscribe({
-        next: (response) => {
-          console.log('Server responded with:', response);
-        },
-        error: (err) => console.error('Request error:', err),
-      });
-  }
-
-  private buildRequest(): AnalysisRequest {
-    return {
-      input: this.analysisForm.value.input,
-      mode: this.analysisForm.value.mode as AnalysisModeId,
-    };
+    
+    if (this.online) {
+      this.analysisService.analyzeRemote(payload);
+    } else {
+      this.analysisService.analyzeOffline(payload);
+    }
   }
 
   ngOnDestroy() {
