@@ -1,6 +1,6 @@
 // src/app/services/offline-analyzer.service.spec.ts
 import { TestBed } from '@angular/core/testing';
-import { take } from 'rxjs/operators';
+import { filter, take } from 'rxjs/operators';
 import { TextAnalysisService } from './text-analysis-service';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
@@ -36,13 +36,18 @@ describe('TextAnalysisService', () => {
       // A → 3, E → 1, I → 4, O → 2, U → 0
       const expected = [3, 1, 4, 2, 0] as const;
 
-      service.analyzeOffline(request).pipe(take(1)).subscribe({
+      service.response$
+      .pipe(filter((result) => result !== null))
+      .pipe(take(1)).subscribe({
         next: (result) => {
-          checkMap(result, vowels, expected);
+          console.log(result);
+          checkMap(result?.letterCount!, vowels, expected);
           done();
         },
         error: (err) => done.fail(err),
       });
+
+      service.analyzeOffline(request);
     });
 
     it('phrase without vowels returns zero occurrences', (done) => {
@@ -52,13 +57,18 @@ describe('TextAnalysisService', () => {
       };
 
       const expected = [0, 0, 0, 0, 0] as const;
-      service.analyzeOffline(request).pipe(take(1)).subscribe({
+      service.response$
+      .pipe(filter((result) => result !== null))
+      .pipe(take(1)).subscribe({
         next: (result) => {
-          checkMap(result, vowels, expected);
+          console.log(result);
+          checkMap(result?.letterCount!, vowels, expected);
           done();
         },
         error: (err) => done.fail(err),
       });
+
+      service.analyzeOffline(request);
     });
   });
 
@@ -85,13 +95,18 @@ describe('TextAnalysisService', () => {
         0, 1, 0, 1, 2, 3, 0, 0, 0, 0, 0,
       ] as const;
 
-      service.analyzeOffline(request).pipe(take(1)).subscribe({
+      service.response$
+      .pipe(filter((result) => result !== null))
+      .pipe(take(1)).subscribe({
         next: (result) => {
-          checkMap(result, consonants, expected);
+          console.log(result);
+          checkMap(result?.letterCount!, consonants, expected);
           done();
         },
         error: (err) => done.fail(err),
       });
+
+      service.analyzeOffline(request);
     });
 
     it('phrase without consonants returns zero occurrences', (done) => {
@@ -102,13 +117,18 @@ describe('TextAnalysisService', () => {
 
       const expected = new Array(consonants.length).fill(0);
 
-      service.analyzeOffline(request).pipe(take(1)).subscribe({
+      service.response$
+      .pipe(filter((result) => result !== null))
+      .pipe(take(1)).subscribe({
         next: (result) => {
-          checkMap(result, consonants, expected);
+          console.log(result);
+          checkMap(result?.letterCount!, consonants, expected);
           done();
         },
         error: (err) => done.fail(err),
       });
+
+      service.analyzeOffline(request);
     });
   });
 });
